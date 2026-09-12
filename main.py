@@ -1,17 +1,25 @@
 from core.scanner import Scanner
+import time
 
-scanner = Scanner("wlan1")
+def main():
 
-scanner.start()
+    scanner = Scanner("wlan1")
 
-try:
+    scanner.start()
 
-    while True:
+    try:
 
-        networks = scanner.get_networks()
+        while True:
 
-        print(f"Networks: {len(networks)}")
+            networks = scanner.get_networks()
 
-except KeyboardInterrupt:
+            print(f"Networks: {len(networks)}")
 
-    scanner.stop()
+            time.sleep(1)
+
+    except KeyboardInterrupt:
+
+        scanner.stop()
+
+if __name__ == "__main__":
+    main()
