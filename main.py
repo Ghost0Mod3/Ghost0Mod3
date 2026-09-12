@@ -1,5 +1,6 @@
 from core.scanner import Scanner
-import time
+from gui.dashboard import Dashboard
+
 
 def main():
 
@@ -7,19 +8,16 @@ def main():
 
     scanner.start()
 
+    dashboard = Dashboard(scanner)
+
     try:
 
-        while True:
+        dashboard.run()
 
-            networks = scanner.get_networks()
-
-            print(f"Networks: {len(networks)}")
-
-            time.sleep(1)
-
-    except KeyboardInterrupt:
+    finally:
 
         scanner.stop()
+
 
 if __name__ == "__main__":
     main()
