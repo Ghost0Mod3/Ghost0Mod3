@@ -29,6 +29,7 @@ class Scanner:
     def get_ssid(self, packet):
 
         try:
+
             elt = packet.getlayer(Dot11Elt)
 
             while elt:
@@ -130,6 +131,8 @@ class Scanner:
 
         with self.lock:
 
-            return list(
-                self.networks.values()
+            return sorted(
+                self.networks.values(),
+                key=lambda network: network["rssi"],
+                reverse=True
             )
