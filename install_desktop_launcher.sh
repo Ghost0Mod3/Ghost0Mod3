@@ -2,22 +2,22 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-START_DESKTOP_FILE="$HOME/Desktop/SOPHIA WiFi Radar.desktop"
-STOP_DESKTOP_FILE="$HOME/Desktop/SOPHIA WiFi Radar Shutdown.desktop"
+START_DESKTOP_FILE="$HOME/Desktop/Ghost0mod3.desktop"
+STOP_DESKTOP_FILE="$HOME/Desktop/Ghost0Mod3 Radar Shutdown.desktop"
 
 # Create Desktop directory if it doesn't exist
 mkdir -p "$HOME/Desktop"
 
-chmod +x "$SCRIPT_DIR/launch_sophia.sh"
-chmod +x "$SCRIPT_DIR/shutdown_sophia.sh"
+chmod +x "$SCRIPT_DIR/launch_Ghost0Mod3.sh"
+chmod +x "$SCRIPT_DIR/shutdown_Ghost0Mod3.sh"
 
 cat > "$START_DESKTOP_FILE" <<EOF
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=SOPHIA WiFi Radar
+Name=Ghost0Mod3 Radar
 Comment=Launch SOPHIA Wi-Fi Recon Radar
-Exec=$SCRIPT_DIR/launch_sophia.sh wlan0
+Exec=$SCRIPT_DIR/launch_Ghost0Mod3.sh wlan1
 Path=$SCRIPT_DIR
 Terminal=true
 Categories=Network;Security;
@@ -27,9 +27,9 @@ cat > "$STOP_DESKTOP_FILE" <<EOF
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=SOPHIA WiFi Radar Shutdown
+Name=Ghost0Mod3 Radar Shutdown
 Comment=Restore normal Wi-Fi and internet after monitor mode
-Exec=$SCRIPT_DIR/shutdown_sophia.sh wlan0
+Exec=$SCRIPT_DIR/shutdown_sophia.sh wlan1
 Path=$SCRIPT_DIR
 Terminal=true
 Categories=Network;Security;
