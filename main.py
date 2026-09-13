@@ -6,8 +6,6 @@ def main():
 
     scanner = Scanner("wlan1")
 
-    scanner.start()
-
     dashboard = Dashboard(scanner)
 
     try:
@@ -20,5 +18,4 @@ def main():
 
 
 if __name__ == "__main__":
-
     main()

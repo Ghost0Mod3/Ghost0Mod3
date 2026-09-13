@@ -1,15 +1,24 @@
 # core/scanner.py
 
 import threading
-import time
 
-from scapy.all import (
-    AsyncSniffer,
-    Dot11,
-    Dot11Beacon,
-    Dot11ProbeResp,
-    Dot11Elt,
-)
+try:
+
+    from scapy.all import (
+        AsyncSniffer,
+        Dot11Beacon,
+        Dot11ProbeResp,
+    )
+
+    SCAPY_AVAILABLE = True
+
+except ImportError:
+
+    SCAPY_AVAILABLE = False
+
+from core.packet_parser import PacketParser
+from core.channel_hopper import ChannelHopper
+from core.classifier import Classifier
 
 
 class Scanner:
@@ -18,51 +27,63 @@ class Scanner:
 
         self.iface = iface
 
-        self.sniffer = None
-
         self.running = False
+
+        self.sniffer = None
 
         self.lock = threading.RLock()
 
         self.networks = {}
 
-    def get_ssid(self, packet):
+        self.channel_hopper = ChannelHopper(
+            self.iface
+        )
 
-        try:
+    def start(self):
 
-            elt = packet.getlayer(Dot11Elt)
+        if self.running:
+            return
 
-            while elt:
+        if not SCAPY_AVAILABLE:
 
-                if getattr(elt, "ID", None) == 0:
+            self.running = True
+            return
 
-                    raw = elt.info
+        self.sniffer = AsyncSniffer(
+            iface=self.iface,
+            prn=self.handle_packet,
+            store=False
+        )
 
-                    decoded = raw.decode(
-                        "utf-8",
-                        errors="replace"
-                    ).strip()
+        self.sniffer.start()
 
-                    return decoded or "Hidden SSID"
+        self.channel_hopper.start()
 
-                elt = elt.payload.getlayer(Dot11Elt)
+        self.running = True
 
-        except Exception:
-            pass
+    def stop(self):
 
-        return "Hidden SSID"
+        self.channel_hopper.stop()
 
-    def get_channel(self, packet):
+        if self.sniffer and self.running:
 
-        try:
+            try:
 
-            stats = packet[Dot11Beacon].network_stats()
+                self.sniffer.stop()
 
-            return int(stats.get("channel", -1))
+            except Exception:
 
-        except Exception:
+                pass
 
-            return -1
+        self.running = False
+
+    def get_status(self):
+
+        if self.running:
+
+            return "Scanning"
+
+        return "Stopped"
 
     def handle_packet(self, packet):
 
@@ -72,60 +93,35 @@ class Scanner:
         ):
             return
 
-        bssid = packet[Dot11].addr2
+        network = PacketParser.parse(packet)
+
+        bssid = network.get("bssid")
 
         if not bssid:
             return
 
-        rssi = int(
-            getattr(
-                packet,
-                "dBm_AntSignal",
-                -100,
+        classification = Classifier.classify(
+            network.get(
+                "ssid",
+                "Unknown"
+            ),
+            network.get(
+                "crypto",
+                "UNKNOWN"
             )
         )
 
-        ssid = self.get_ssid(packet)
+        network["risk"] = classification[
+            "risk"
+        ]
 
-        channel = self.get_channel(packet)
+        network["category"] = classification[
+            "category"
+        ]
 
         with self.lock:
 
-            self.networks[bssid] = {
-
-                "ssid": ssid,
-
-                "bssid": bssid,
-
-                "rssi": rssi,
-
-                "channel": channel,
-
-                "last_seen": time.time(),
-            }
-
-    def start(self):
-
-        if self.running:
-            return
-
-        self.sniffer = AsyncSniffer(
-            iface=self.iface,
-            prn=self.handle_packet,
-            store=False,
-        )
-
-        self.sniffer.start()
-
-        self.running = True
-
-    def stop(self):
-
-        if self.sniffer:
-
-            self.sniffer.stop()
-
-        self.running = False
+            self.networks[bssid] = network
 
     def get_networks(self):
 
@@ -133,6 +129,17 @@ class Scanner:
 
             return sorted(
                 self.networks.values(),
-                key=lambda network: network["rssi"],
+                key=lambda network: network.get(
+                    "rssi",
+                    -100
+                ),
                 reverse=True
+            )
+
+    def get_network_count(self):
+
+        with self.lock:
+
+            return len(
+                self.networks
             )
