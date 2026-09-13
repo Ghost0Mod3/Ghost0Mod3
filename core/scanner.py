@@ -5,7 +5,7 @@ import threading
 try:
 
     from scapy.all import (
-        AsyncSniffer,
+        sniff,
         Dot11Beacon,
         Dot11ProbeResp,
     )
@@ -29,14 +29,24 @@ class Scanner:
 
         self.running = False
 
-        self.sniffer = None
-
         self.lock = threading.RLock()
 
         self.networks = {}
 
+        self.sniffer_thread = None
+
         self.channel_hopper = ChannelHopper(
             self.iface
+        )
+
+    def sniff_loop(self):
+
+        print(f"Sniffing on {self.iface}")
+
+        sniff(
+            iface=self.iface,
+            prn=self.handle_packet,
+            store=False
         )
 
     def start(self):
@@ -46,46 +56,42 @@ class Scanner:
 
         if not SCAPY_AVAILABLE:
 
-            self.running = True
+            print("Scapy unavailable")
+
             return
 
-        self.sniffer = AsyncSniffer(
-            iface=self.iface,
-            prn=self.handle_packet,
-            store=False
-        )
-
-        self.sniffer.start()
-
-        self.channel_hopper.start()
+        print(f"Starting scanner on {self.iface}")
 
         self.running = True
 
+        self.channel_hopper.start()
+
+        self.sniffer_thread = threading.Thread(
+            target=self.sniff_loop,
+            daemon=True
+        )
+
+        self.sniffer_thread.start()
+
     def stop(self):
 
-        self.channel_hopper.stop()
-
-        if self.sniffer and self.running:
-
-            try:
-
-                self.sniffer.stop()
-
-            except Exception:
-
-                pass
+        print("Stopping scanner")
 
         self.running = False
+
+        self.channel_hopper.stop()
 
     def get_status(self):
 
         if self.running:
-
             return "Scanning"
 
         return "Stopped"
 
     def handle_packet(self, packet):
+
+        if not self.running:
+            return
 
         if not (
             packet.haslayer(Dot11Beacon)
@@ -101,27 +107,22 @@ class Scanner:
             return
 
         classification = Classifier.classify(
-            network.get(
-                "ssid",
-                "Unknown"
-            ),
-            network.get(
-                "crypto",
-                "UNKNOWN"
-            )
+            network.get("ssid", "Unknown"),
+            network.get("crypto", "UNKNOWN")
         )
 
-        network["risk"] = classification[
-            "risk"
-        ]
+        network["risk"] = classification["risk"]
 
-        network["category"] = classification[
-            "category"
-        ]
+        network["category"] = classification["category"]
 
         with self.lock:
 
             self.networks[bssid] = network
+
+        print(
+            f"{network.get('ssid')} "
+            f"{network.get('rssi')} dBm"
+        )
 
     def get_networks(self):
 
