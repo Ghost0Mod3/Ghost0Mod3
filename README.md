@@ -185,3 +185,18 @@ Planned:
 - Confidence scoring
 - Distance estimation
 - Vehicle deployment profile
+
+  ------------------------------------------------------
+  ## Disclaimer
+--------------------
+Ghost0Mod3 is intended solely for educational, research, network analysis,
+and authorized security testing purposes.
+
+Users are responsible for ensuring that their use of this software complies
+with all applicable local, state, federal, and international laws.
+
+The author assumes no responsibility and accepts no liability for any misuse,
+unauthorized access, criminal activity, damages, or legal
+consequences resulting from the use of this software.
+
+Use at your own risk.
