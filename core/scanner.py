@@ -93,28 +93,17 @@ class Scanner:
 
     def handle_packet(self, packet):
 
-        print("HANDLE_PACKET")
-
         if not (
             packet.haslayer(Dot11Beacon)
             or packet.haslayer(Dot11ProbeResp)
         ):
             return
 
-        print("BEACON FOUND")
-
         network = PacketParser.parse(packet)
-
-        print("NETWORK:", network)
 
         bssid = network.get("bssid")
 
-        print("BSSID:", bssid)
-
         if not bssid:
-
-            print("NO BSSID")
-
             return
 
         classification = Classifier.classify(
@@ -128,17 +117,17 @@ class Scanner:
             )
         )
 
-        network["risk"] = classification["risk"]
+        network["risk"] = classification[
+            "risk"
+        ]
 
-        network["category"] = classification["category"]
+        network["category"] = classification[
+            "category"
+        ]
 
         with self.lock:
 
             self.networks[bssid] = network
-
-        print(
-            f"STORED: {network.get('ssid')}"
-        )
 
     def get_networks(self):
 
