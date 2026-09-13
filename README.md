@@ -1,88 +1,187 @@
-# SOPHIA Wi-Fi Recon Radar
+# Ghost0Mod3
 
-covers home networks, police cruisers, flock cameras etc.
+Ghost0Mod3 is a Raspberry Pi based Wi-Fi reconnaissance and network awareness platform built around Scapy, monitor mode capture, and a lightweight Tkinter user interface.
 
-## What this build includes
+The project is designed to run on a Raspberry Pi 4 with a dedicated wireless adapter operating in monitor mode.
 
-- Flask Web HUD (`templates/index.html`) with tactical blue radar map
-- Threaded Scapy sniffer + Flask server in one script (`sophia.py`)
-- In-script channel hopping (1-13 2.4GHz, full 5GHz band, or all channels in dual mode)
-- Live channel controls (2.4GHz / 5GHz / dual, hop delay, lock channel)
-  - **Dual mode now scans all 2.4GHz + 5GHz channels** for comprehensive coverage
-- High-risk classification for FLOCK / police-like / security camera signatures
-- HUD toggle to ignore dorm/home-like networks (including SSIDs with 10+ matching names)
-- **Radar click selection**: Click on radar pings to open action menu
-  - Select networks as SOI (Signals of Interest) targets
-  - Hide networks from radar and list display
-  - Selected target is persisted and saved to `selected_target.json`
-- **Selected Target display panel** showing current SOI with BSSID and risk level
-- Audible beep alerts for newly detected high-risk targets
-- HUD zoom slider to change radar scale
-- Confidence scoring per target (signal + repeat sightings + stability + freshness)
-- Alert rules panel (minimum RSSI, minimum confidence, category targeting)
-- Movement mode with GPS path logging and strongest-network breadcrumbs
-- Launcher script (`launch_sophia.sh`) that runs:
-  - `airmon-ng check kill`
-  - `airmon-ng start <iface>`
-  - `python3 sophia.py --iface <monitor_iface>`
+---
 
-## Kali setup (one time)
+## Features
+
+- Live Wi-Fi network discovery
+- Monitor mode packet capture
+- Real-time network list
+- Network classification
+- RSSI tracking
+- Target selection
+- Target persistence
+- Channel hopping
+- Raspberry Pi optimized deployment
+- Desktop launcher integration
+
+---
+
+## Hardware
+
+Recommended:
+
+- Raspberry Pi 4
+- External Wi-Fi adapter with monitor mode support
+- 7" Raspberry Pi display
+- Vehicle-mounted or portable power source
+
+Tested with:
+
+- wlan0 for management
+- wlan1 for monitor mode capture
+
+---
+
+## Project Structure
+
+```text
+Ghost0Mod3
+│
+├── core/
+│   ├── channel_hopper.py
+│   ├── classifier.py
+│   ├── packet_parser.py
+│   ├── scanner.py
+│   └── target_manager.py
+│
+├── gui/
+│   └── dashboard.py
+│
+├── data/
+│
+├── tests/
+│   ├── test_async.py
+│   ├── test_beacons.py
+│   └── test_scapy.py
+│
+├── legacy/
+│
+├── main.py
+├── requirements.txt
+└── VERSION
+```
+
+---
+
+## Installation
+
+Clone the repository:
 
 ```bash
-python3 -m pip install -r requirements.txt
-chmod +x launch_sophia.sh
-chmod +x shutdown_sophia.sh
+git clone https://github.com/Ghost0Mod3/Ghost0Mod3.git
+cd Ghost0Mod3
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## Running
+
+Launch manually:
+
+```bash
+sudo -E python3 main.py
+```
+
+---
+
+## Desktop Launchers
+
+Install desktop launchers:
+
+```bash
 chmod +x install_desktop_launcher.sh
 ./install_desktop_launcher.sh
 ```
 
-Then double-click `SOPHIA WiFi Radar` on the Kali desktop.
+This creates:
 
-To restore normal networking, double-click `SOPHIA WiFi Radar Shutdown`.
-
-## Direct run
-
-```bash
-./launch_sophia.sh wlan0
+```text
+Ghost0Mod3.desktop
+Ghost0Mod3 Shutdown.desktop
 ```
 
-If your adapter is not named `wlan0` (for example `wlp2s0`), run:
+on the Raspberry Pi desktop.
+
+---
+
+## Monitor Mode
+
+Verify monitor mode:
 
 ```bash
-./launch_sophia.sh wlp2s0
+iw dev
 ```
 
-## Radar HUD Usage
+Expected:
 
-- **Click on radar pings** to see action menu (Select as target, Hide network)
-- **Hidden networks** are persisted in browser localStorage
-- **Selected targets** are saved server-side to `selected_target.json`
-- **Channel controls** allow switching between 2.4GHz, 5GHz, or Dual (all channels)
-- **Zoom slider** scales the radar display (0.6x to 2.2x)
-- **Alert rules** let you filter by RSSI, confidence, and network category
-
-## Restore normal Wi-Fi / internet
-
-If monitor mode stays active and internet is down, run:
-
-```bash
-./shutdown_sophia.sh wlan0
+```text
+Interface wlan1
+type monitor
 ```
 
-## About N/S/E/W orientation
+---
 
-Current radar direction is visual/simulated (stable hash angle per BSSID), not true physical bearing.
-To get true N/S/E/W orientation to a transmitter, you need additional direction hardware
-(directional antennas, phased arrays, or multi-receiver triangulation with heading sensors).
+## Target Tracking
 
-## API Endpoints
+Ghost0Mod3 supports:
 
-- `GET/POST /api/networks` - Fetch detected networks
-- `GET/POST /api/networks/longpoll` - Long-poll for network updates
-- `GET/POST /api/channel` - Get/set channel hopping configuration
-- `GET/POST /api/target` - Get/set selected SOI target
-- `GET/POST /api/movement` - Get/post GPS movement breadcrumbs
+- Selecting a target network
+- Saving a target
+- Reloading previously selected targets
 
-HUD URL:
+Target information is stored in:
 
-`http://127.0.0.1:5000`
+```text
+data/target.json
+```
+
+---
+
+## Legacy Components
+
+The original SOPHIA application and associated launcher files have been archived under:
+
+```text
+legacy/
+```
+
+These files are preserved for reference but are not part of the active Ghost0Mod3 application.
+
+---
+
+## Status
+
+Current Phase:
+
+```text
+Alpha
+```
+
+Working:
+
+- Packet capture
+- Monitor mode
+- Channel hopping
+- Classification
+- Target management
+- Raspberry Pi deployment
+- Desktop launchers
+
+Planned:
+
+- Improved target panel
+- Radar audio notifications
+- Confidence scoring
+- Distance estimation
+- Vehicle deployment profile
