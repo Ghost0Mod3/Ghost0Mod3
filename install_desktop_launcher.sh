@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
+
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-START_DESKTOP_FILE="$HOME/Desktop/Ghost0mod3.desktop"
-STOP_DESKTOP_FILE="$HOME/Desktop/Ghost0Mod3 Radar Shutdown.desktop"
 
-# Create Desktop directory if it doesn't exist
+START_DESKTOP_FILE="$HOME/Desktop/Ghost0Mod3.desktop"
+STOP_DESKTOP_FILE="$HOME/Desktop/Ghost0Mod3 Shutdown.desktop"
+
 mkdir -p "$HOME/Desktop"
 
 chmod +x "$SCRIPT_DIR/launch_Ghost0Mod3.sh"
@@ -15,9 +16,9 @@ cat > "$START_DESKTOP_FILE" <<EOF
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=Ghost0Mod3 Radar
-Comment=Launch SOPHIA Wi-Fi Recon Radar
-Exec=$SCRIPT_DIR/launch_Ghost0Mod3.sh wlan1
+Name=Ghost0Mod3
+Comment=Launch Ghost0Mod3 Wi-Fi Radar
+Exec=$SCRIPT_DIR/launch_Ghost0Mod3.sh
 Path=$SCRIPT_DIR
 Terminal=true
 Categories=Network;Security;
@@ -27,21 +28,25 @@ cat > "$STOP_DESKTOP_FILE" <<EOF
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=Ghost0Mod3 Radar Shutdown
-Comment=Restore normal Wi-Fi and internet after monitor mode
-Exec=$SCRIPT_DIR/shutdown_sophia.sh wlan1
+Name=Ghost0Mod3 Shutdown
+Comment=Stop Ghost0Mod3
+Exec=$SCRIPT_DIR/shutdown_Ghost0Mod3.sh
 Path=$SCRIPT_DIR
 Terminal=true
 Categories=Network;Security;
 EOF
 
-chmod +x "$START_DESKTOP_FILE" "$STOP_DESKTOP_FILE"
+chmod +x "$START_DESKTOP_FILE"
+chmod +x "$STOP_DESKTOP_FILE"
 
 if command -v gio >/dev/null 2>&1; then
-  gio set "$START_DESKTOP_FILE" metadata::trusted true || true
-  gio set "$STOP_DESKTOP_FILE" metadata::trusted true || true
+    gio set "$START_DESKTOP_FILE" metadata::trusted true || true
+    gio set "$STOP_DESKTOP_FILE" metadata::trusted true || true
 fi
 
-echo "Created desktop launcher: $START_DESKTOP_FILE"
-echo "Created desktop launcher: $STOP_DESKTOP_FILE"
-echo "Use start icon to launch SOPHIA and shutdown icon to restore Wi-Fi."
+echo ""
+echo "Created:"
+echo "  $START_DESKTOP_FILE"
+echo "  $STOP_DESKTOP_FILE"
+echo ""
+echo "Ghost0Mod3 desktop launchers installed."
