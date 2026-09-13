@@ -101,20 +101,15 @@ class Scanner:
         ):
             return
 
-        print("BEACON FOUND")
-
         network = PacketParser.parse(packet)
 
-        print("NETWORK:", network)
+        print(network)
 
-        bssid = network.get("bssid")
-
-        print("BSSID:", bssid)
+        bssid = network.get(
+            "bssid"
+        )
 
         if not bssid:
-
-            print("NO BSSID")
-
             return
 
         classification = Classifier.classify(
@@ -128,17 +123,22 @@ class Scanner:
             )
         )
 
-        network["risk"] = classification["risk"]
+        network["risk"] = classification[
+            "risk"
+        ]
 
-        network["category"] = classification["category"]
+        network["category"] = classification[
+            "category"
+        ]
 
         with self.lock:
 
             self.networks[bssid] = network
 
-        print(
-            f"STORED: {network.get('ssid')}"
-        )
+            print(
+                f"Stored network: "
+                f"{network.get('ssid')}"
+            )
 
     def get_networks(self):
 
