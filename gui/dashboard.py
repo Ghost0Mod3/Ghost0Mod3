@@ -61,11 +61,11 @@ class Dashboard:
         title = tk.Label(
             self.root,
             text="Ghost0Mod3",
-            font=("Arial", 22, "bold")
+            font=("Arial", 18, "bold")
         )
 
         title.pack(
-            pady=10
+            pady=5
         )
 
         self.status = tk.Label(
@@ -82,81 +82,139 @@ class Dashboard:
 
         self.network_count.pack()
 
-        # --------------------------------
-        # Button Bar
-        # --------------------------------
+        # ----------------------------
+        # BUTTONS
+        # ----------------------------
 
         button_frame = tk.Frame(
             self.root
         )
 
         button_frame.pack(
-            pady=10
+            pady=5
         )
 
         self.start_button = tk.Button(
             button_frame,
-            text="Start Scan",
-            width=15,
+            text="Start",
+            width=10,
             command=self.start_scan
-        )
-
-        self.start_button.pack(
-            side=tk.LEFT,
-            padx=5
         )
 
         self.stop_button = tk.Button(
             button_frame,
-            text="Stop Scan",
-            width=15,
+            text="Stop",
+            width=10,
             command=self.stop_scan
-        )
-
-        self.stop_button.pack(
-            side=tk.LEFT,
-            padx=5
         )
 
         self.track_button = tk.Button(
             button_frame,
-            text="Track Selected",
-            width=15,
+            text="Track",
+            width=10,
             command=self.track_selected
-        )
-
-        self.track_button.pack(
-            side=tk.LEFT,
-            padx=5
         )
 
         self.clear_button = tk.Button(
             button_frame,
-            text="Clear Target",
-            width=15,
+            text="Clear",
+            width=10,
             command=self.clear_target
-        )
-
-        self.clear_button.pack(
-            side=tk.LEFT,
-            padx=5
         )
 
         self.settings_button = tk.Button(
             button_frame,
             text="Settings",
-            width=15,
+            width=10,
             command=self.open_settings
         )
 
-        self.settings_button.pack(
-            side=tk.LEFT,
-            padx=5
+        self.refresh_button = tk.Button(
+            button_frame,
+            text="Refresh",
+            width=10,
+            command=self.manual_refresh
         )
 
-        # --------------------------------
-        # Network Table
-        # --------------------------------
+        if self.display_mode == "compact":
+
+            self.start_button.grid(
+                row=0,
+                column=0,
+                padx=2,
+                pady=2
+            )
+
+            self.stop_button.grid(
+                row=0,
+                column=1,
+                padx=2,
+                pady=2
+            )
+
+            self.track_button.grid(
+                row=1,
+                column=0,
+                padx=2,
+                pady=2
+            )
+
+            self.clear_button.grid(
+                row=1,
+                column=1,
+                padx=2,
+                pady=2
+            )
+
+            self.settings_button.grid(
+                row=2,
+                column=0,
+                padx=2,
+                pady=2
+            )
+
+            self.refresh_button.grid(
+                row=2,
+                column=1,
+                padx=2,
+                pady=2
+            )
+
+        else:
+
+            self.start_button.pack(
+                side=tk.LEFT,
+                padx=5
+            )
+
+            self.stop_button.pack(
+                side=tk.LEFT,
+                padx=5
+            )
+
+            self.track_button.pack(
+                side=tk.LEFT,
+                padx=5
+            )
+
+            self.clear_button.pack(
+                side=tk.LEFT,
+                padx=5
+            )
+
+            self.settings_button.pack(
+                side=tk.LEFT,
+                padx=5
+            )
+
+            self.refresh_button.pack(
+                side=tk.LEFT,
+                padx=5
+            )
+
+        # ----------------------------
+        # NETWORK TABLE
+        # ----------------------------
 
         columns = (
             "ssid",
@@ -168,7 +226,8 @@ class Dashboard:
         self.tree = ttk.Treeview(
             self.root,
             columns=columns,
-            show="headings"
+            show="headings",
+            height=6
         )
 
         self.tree.heading(
@@ -188,39 +247,19 @@ class Dashboard:
 
         self.tree.heading(
             "channel",
-            text="CHANNEL"
-        )
-
-        self.tree.column(
-            "ssid",
-            width=200
-        )
-
-        self.tree.column(
-            "bssid",
-            width=180
-        )
-
-        self.tree.column(
-            "rssi",
-            width=80
-        )
-
-        self.tree.column(
-            "channel",
-            width=80
+            text="CH"
         )
 
         self.tree.pack(
             fill="both",
             expand=True,
-            padx=10,
-            pady=10
+            padx=5,
+            pady=5
         )
 
-        # --------------------------------
-        # Target WiFi Panel
-        # --------------------------------
+        # ----------------------------
+        # TARGET PANEL
+        # ----------------------------
 
         target_frame = ttk.LabelFrame(
             self.root,
@@ -229,8 +268,8 @@ class Dashboard:
 
         target_frame.pack(
             fill="x",
-            padx=10,
-            pady=10
+            padx=5,
+            pady=5
         )
 
         self.target_ssid = tk.Label(
@@ -239,11 +278,7 @@ class Dashboard:
             anchor="w"
         )
 
-        self.target_ssid.pack(
-            fill="x",
-            padx=10,
-            pady=2
-        )
+        self.target_ssid.pack(fill="x")
 
         self.target_bssid = tk.Label(
             target_frame,
@@ -251,11 +286,7 @@ class Dashboard:
             anchor="w"
         )
 
-        self.target_bssid.pack(
-            fill="x",
-            padx=10,
-            pady=2
-        )
+        self.target_bssid.pack(fill="x")
 
         self.target_rssi = tk.Label(
             target_frame,
@@ -263,35 +294,15 @@ class Dashboard:
             anchor="w"
         )
 
-        self.target_rssi.pack(
-            fill="x",
-            padx=10,
-            pady=2
-        )
+        self.target_rssi.pack(fill="x")
 
         self.target_channel = tk.Label(
             target_frame,
-            text="CHANNEL: None",
+            text="CH: None",
             anchor="w"
         )
 
-        self.target_channel.pack(
-            fill="x",
-            padx=10,
-            pady=2
-        )
-
-        self.target_security = tk.Label(
-            target_frame,
-            text="SECURITY: None",
-            anchor="w"
-        )
-
-        self.target_security.pack(
-            fill="x",
-            padx=10,
-            pady=2
-        )
+        self.target_channel.pack(fill="x")
 
         self.target_status = tk.Label(
             target_frame,
@@ -299,47 +310,7 @@ class Dashboard:
             anchor="w"
         )
 
-        self.target_status.pack(
-            fill="x",
-            padx=10,
-            pady=2
-        )
-
-        self.target_last_seen = tk.Label(
-            target_frame,
-            text="LAST SEEN: Never",
-            anchor="w"
-        )
-
-        self.target_last_seen.pack(
-            fill="x",
-            padx=10,
-            pady=2
-        )
-
-        self.target_distance = tk.Label(
-            target_frame,
-            text="DISTANCE: Unknown",
-            anchor="w"
-        )
-
-        self.target_distance.pack(
-            fill="x",
-            padx=10,
-            pady=2
-        )
-
-        self.target_confidence = tk.Label(
-            target_frame,
-            text="CONFIDENCE: 0%",
-            anchor="w"
-        )
-
-        self.target_confidence.pack(
-            fill="x",
-            padx=10,
-            pady=2
-        )
+        self.target_status.pack(fill="x")
 
     def open_settings(self):
 
@@ -382,7 +353,6 @@ class Dashboard:
             "bssid": values[1],
             "rssi": values[2],
             "channel": values[3]
-
         }
 
         self.target_manager.save_target(
@@ -416,11 +386,7 @@ class Dashboard:
             )
 
             self.target_channel.config(
-                text="CHANNEL: None"
-            )
-
-            self.target_security.config(
-                text="SECURITY: None"
+                text="CH: None"
             )
 
             self.target_status.config(
@@ -442,16 +408,18 @@ class Dashboard:
         )
 
         self.target_channel.config(
-            text=f"CHANNEL: {self.current_target.get('channel')}"
-        )
-
-        self.target_security.config(
-            text="SECURITY: DETECTED"
+            text=f"CH: {self.current_target.get('channel')}"
         )
 
         self.target_status.config(
             text="STATUS: TRACKING"
         )
+
+    def manual_refresh(self):
+
+        self.update_networks()
+
+        self.refresh_target_panel()
 
     def update_networks(self):
 
