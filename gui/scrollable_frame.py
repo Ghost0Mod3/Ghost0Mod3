@@ -11,44 +11,66 @@ class ScrollableFrame(ttk.Frame):
         **kwargs
     ):
 
-   ***  super().__init__(
-            ***tainer,
+        super().__init__(
+            container,
             *args,
-     ***    **kwargs
+            **kwargs
         )
 
-        ***vas = tk.Canvas(
-            sel***            highlightthickness=0***      )
-
-        scrollbar = ttk***rollbar(
+        self.canvas = tk.Canvas(
             self,
-     ***    orient="vertical",
-         ***command=canvas.yview
+            highlightthickness=0
         )
 
-***     self.scrollable_frame = ttk***ame(
-            canvas
-        ***        self.scrollable_frame.bi***
+        self.scrollbar = ttk.Scrollbar(
+            self,
+            orient="vertical",
+            command=self.canvas.yview
+        )
+
+        self.scrollable_frame = ttk.Frame(
+            self.canvas
+        )
+
+        self.scrollable_frame.bind(
             "<Configure>",
-    ***     lambda e: canvas.configure(***              scrollregion=canva***box("all")
+            lambda e: self.canvas.configure(
+                scrollregion=self.canvas.bbox("all")
             )
-       ***
-        canvas.create_window(
- ***        (0, 0),
-            wind***self.scrollable_frame,
-         ***anchor="nw"
         )
 
-        c***as.configure(
-            yscrol***mmand=scrollbar.set
+        self.canvas.create_window(
+            (0, 0),
+            window=self.scrollable_frame,
+            anchor="nw"
         )
 
- ***    canvas.pack(
-            sid***left",
+        self.canvas.configure(
+            yscrollcommand=self.scrollbar.set
+        )
+
+        self.canvas.pack(
+            side="left",
             fill="both",
-***         expand=True
+            expand=True
         )
 
-***     scrollbar.pack(
-           ***de="right",
-            fill="y"***      )
+        self.scrollbar.pack(
+            side="right",
+            fill="y"
+        )
+
+        self.canvas.bind_all(
+            "<MouseWheel>",
+            self._on_mousewheel
+        )
+
+    def _on_mousewheel(
+        self,
+        event
+    ):
+
+        self.canvas.yview_scroll(
+            int(-1 * (event.delta / 120)),
+            "units"
+        )
