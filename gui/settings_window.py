@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 
+from gui.scrollable_frame import ScrollableFrame
+
 
 class SettingsWindow:
 
@@ -8,13 +10,33 @@ class SettingsWindow:
 
         self.window = tk.Toplevel(parent)
 
-        self.window.title("Ghost0Mod3 Settings")
+        self.window.title(
+            "Ghost0Mod3 Settings"
+        )
 
-        self.window.geometry("500x700")
+        screen_width = (
+            self.window.winfo_screenwidth()
+        )
 
-        self.window.resizable(
-            False,
-            False
+        screen_height = (
+            self.window.winfo_screenheight()
+        )
+
+        self.window.geometry(
+            f"{screen_width}x{screen_height}"
+        )
+
+        self.scroll = ScrollableFrame(
+            self.window
+        )
+
+        self.scroll.pack(
+            fill="both",
+            expand=True
+        )
+
+        self.content = (
+            self.scroll.scrollable_frame
         )
 
         self.build_ui()
@@ -22,7 +44,7 @@ class SettingsWindow:
     def build_ui(self):
 
         title = tk.Label(
-            self.window,
+            self.content,
             text="Ghost0Mod3 Settings",
             font=("Arial", 18, "bold")
         )
@@ -31,12 +53,12 @@ class SettingsWindow:
             pady=10
         )
 
-        # --------------------------------------------------
-        # Scanner Settings
-        # --------------------------------------------------
+        # ----------------------------------
+        # Scanner
+        # ----------------------------------
 
         scanner_frame = ttk.LabelFrame(
-            self.window,
+            self.content,
             text="Scanner"
         )
 
@@ -102,12 +124,12 @@ class SettingsWindow:
             pady=2
         )
 
-        # --------------------------------------------------
+        # ----------------------------------
         # Audio
-        # --------------------------------------------------
+        # ----------------------------------
 
         audio_frame = ttk.LabelFrame(
-            self.window,
+            self.content,
             text="Audio"
         )
 
@@ -145,12 +167,12 @@ class SettingsWindow:
             pady=2
         )
 
-        # --------------------------------------------------
+        # ----------------------------------
         # Display
-        # --------------------------------------------------
+        # ----------------------------------
 
         display_frame = ttk.LabelFrame(
-            self.window,
+            self.content,
             text="Display"
         )
 
@@ -202,129 +224,6 @@ class SettingsWindow:
             pady=2
         )
 
-        # --------------------------------------------------
+        # ----------------------------------
         # Target Tracking
-        # --------------------------------------------------
-
-        target_frame = ttk.LabelFrame(
-            self.window,
-            text="Target Tracking"
-        )
-
-        target_frame.pack(
-            fill="x",
-            padx=10,
-            pady=5
-        )
-
-        self.save_target = tk.BooleanVar(
-            value=True
-        )
-
-        self.highlight_target = tk.BooleanVar(
-            value=True
-        )
-
-        ttk.Checkbutton(
-            target_frame,
-            text="Save Target Between Restarts",
-            variable=self.save_target
-        ).pack(
-            anchor="w",
-            padx=10,
-            pady=2
-        )
-
-        ttk.Checkbutton(
-            target_frame,
-            text="Highlight Target",
-            variable=self.highlight_target
-        ).pack(
-            anchor="w",
-            padx=10,
-            pady=2
-        )
-
-        # --------------------------------------------------
-        # Future Features
-        # --------------------------------------------------
-
-        future_frame = ttk.LabelFrame(
-            self.window,
-            text="Experimental"
-        )
-
-        future_frame.pack(
-            fill="x",
-            padx=10,
-            pady=5
-        )
-
-        self.distance_estimate = tk.BooleanVar(
-            value=False
-        )
-
-        self.confidence_score = tk.BooleanVar(
-            value=False
-        )
-
-        self.gps_tracking = tk.BooleanVar(
-            value=False
-        )
-
-        ttk.Checkbutton(
-            future_frame,
-            text="Distance Estimation",
-            variable=self.distance_estimate
-        ).pack(
-            anchor="w",
-            padx=10,
-            pady=2
-        )
-
-        ttk.Checkbutton(
-            future_frame,
-            text="Confidence Scoring",
-            variable=self.confidence_score
-        ).pack(
-            anchor="w",
-            padx=10,
-            pady=2
-        )
-
-        ttk.Checkbutton(
-            future_frame,
-            text="GPS Tracking",
-            variable=self.gps_tracking
-        ).pack(
-            anchor="w",
-            padx=10,
-            pady=2
-        )
-
-        button_frame = tk.Frame(
-            self.window
-        )
-
-        button_frame.pack(
-            pady=10
-        )
-
-        tk.Button(
-            button_frame,
-            text="Save",
-            width=15
-        ).pack(
-            side=tk.LEFT,
-            padx=5
-        )
-
-        tk.Button(
-            button_frame,
-            text="Close",
-            width=15,
-            command=self.window.destroy
-        ).pack(
-            side=tk.LEFT,
-            padx=5
-        )
+      
