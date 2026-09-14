@@ -11,51 +11,44 @@ class ScrollableFrame(ttk.Frame):
         **kwargs
     ):
 
-        super().__init__(
-            container,
+   ***  super().__init__(
+            ***tainer,
             *args,
-            **kwargs
+     ***    **kwargs
         )
 
-        canvas = tk.Canvas(
+        ***vas = tk.Canvas(
+            sel***            highlightthickness=0***      )
+
+        scrollbar = ttk***rollbar(
             self,
-            highlightthickness=0
+     ***    orient="vertical",
+         ***command=canvas.yview
         )
 
-        scrollbar = ttk.Scrollbar(
-            self,
-            orient="vertical",
-            command=canvas.yview
-        )
-
-        self.scrollable_frame = ttk.Frame(
+***     self.scrollable_frame = ttk***ame(
             canvas
-        )
-
-        self.scrollable_frame.bind(
+        ***        self.scrollable_frame.bi***
             "<Configure>",
-            lambda e: canvas.configure(
-                scrollregion=canvas.bbox("all")
+    ***     lambda e: canvas.configure(***              scrollregion=canva***box("all")
             )
-        )
-
+       ***
         canvas.create_window(
-            (0, 0),
-            window=self.scrollable_frame,
-            anchor="nw"
+ ***        (0, 0),
+            wind***self.scrollable_frame,
+         ***anchor="nw"
         )
 
-        canvas.configure(
-            yscrollcommand=scrollbar.set
+        c***as.configure(
+            yscrol***mmand=scrollbar.set
         )
 
-        canvas.pack(
-            side="left",
+ ***    canvas.pack(
+            sid***left",
             fill="both",
-            expand=True
+***         expand=True
         )
 
-        scrollbar.pack(
-            side="right",
-            fill="y"
-        )
+***     scrollbar.pack(
+           ***de="right",
+            fill="y"***      )
