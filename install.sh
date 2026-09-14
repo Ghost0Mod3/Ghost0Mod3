@@ -32,34 +32,28 @@ python3 -m pip install \
     -r requirements.txt
 
 echo ""
-echo "Setting file permissions..."
+echo "Setting permissions..."
 
 chmod +x launch_Ghost0Mod3.sh
-
 chmod +x shutdown_Ghost0Mod3.sh
-
-if [ -f install_desktop_launcher.sh ]; then
-    chmod +x install_desktop_launcher.sh
-fi
+chmod +x install_desktop_launcher.sh
 
 echo ""
 echo "Installing desktop launchers..."
 
-if [ -f install_desktop_launcher.sh ]; then
-    ./install_desktop_launcher.sh
-fi
-
-echo ""
-echo "Verifying installation..."
-
-python3 --version
+./install_desktop_launcher.sh
 
 echo ""
 echo "==================================="
-echo "Ghost0Mod3 Installation Complete!"
+echo "Ghost0Mod3 Installation Complete"
 echo "==================================="
 
+echo ""
+echo "Desktop shortcuts created."
 echo ""
 echo "Launch using:"
-echo "./launch_Ghost0Mod3.sh"
+echo "  Ghost0Mod3.desktop"
+echo ""
+echo "Or:"
+echo "  ./launch_Ghost0Mod3.sh"
 echo ""
