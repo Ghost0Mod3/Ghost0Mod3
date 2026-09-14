@@ -170,6 +170,7 @@ Alpha
 
 Working:
 
+
 - Packet capture
 - Monitor mode
 - Channel hopping
@@ -177,7 +178,33 @@ Working:
 - Target management
 - Raspberry Pi deployment
 - Desktop launchers
+## Supported Operating Systems
 
+Officially Tested:
+
+- Raspberry Pi OS
+
+
+Expected Compatibility:
+
+- Debian
+- Ubuntu
+- Linux Mint
+- Kali Linux
+
+Not Supported:
+
+- Windows
+- macOS
+
+Ghost0Mod3 relies on:
+
+- Python 3
+- Scapy
+- Linux monitor mode support
+- aircrack-ng
+- iw
+- wireless-tools
 Planned:
 
 - Improved target panel
