@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 
 from gui.settings_window import SettingsWindow
+from gui.track_window import TrackWindow
+
 from core.target_manager import TargetManager
 
 
@@ -336,38 +338,56 @@ class Dashboard:
             text="Status: Stopped"
         )
 
-    def track_selected(self):
+  def track_selected(self):
 
-        selected = self.tree.focus()
+    selected = self.tree.focus()
 
-        if not selected:
-            return
+    if not selected:
 
-        values = self.tree.item(
-            selected
-        )["values"]
-
-        self.current_target = {
-
-            "ssid": values[0],
-            "bssid": values[1],
-            "rssi": values[2],
-            "channel": values[3]
-        }
-
-        self.target_manager.save_target(
-            self.current_target
+        self.status.config(
+            text="Status: No Network Selected"
         )
 
-        self.refresh_target_panel()
+        return
+
+    values = self.tree.item(
+        selected
+    )["values"]
+
+    self.current_target = {
+
+        "ssid": values[0],
+        "bssid": values[1],
+        "rssi": values[2],
+        "channel": values[3]
+
+    }
+
+    self.target_manager.save_target(
+        self.current_target
+    )
+
+    self.refresh_target_panel()
+
+    self.status.config(
+        text="Status: Tracking Target"
+    )
+
+    TrackWindow(
+        self.root
+    )
 
     def clear_target(self):
 
-        self.current_target = None
+    self.current_target = None
 
-        self.target_manager.clear_target()
+    self.target_manager.clear_target()
 
-        self.refresh_target_panel()
+    self.refresh_target_panel()
+
+    self.status.config(
+        text="Status: Target Cleared"
+    )
 
     def refresh_target_panel(self):
 
@@ -415,11 +435,19 @@ class Dashboard:
             text="STATUS: TRACKING"
         )
 
-    def manual_refresh(self):
+   def manual_refresh(self):
 
-        self.update_networks()
+    self.current_target = (
+        self.target_manager.load_target()
+    )
 
-        self.refresh_target_panel()
+    self.update_networks()
+
+    self.refresh_target_panel()
+
+   self.target_status.config(
+    text="STATUS: TRACKING ACTIVE"
+)
 
     def update_networks(self):
 
