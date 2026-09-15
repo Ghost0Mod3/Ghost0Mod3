@@ -58,7 +58,7 @@ python3 --version
 echo ""
 echo "Checking Scapy installation..."
 
-python3 -c "from scapy.all import *; print('Scapy OK')" || true
+sudo python3 -c "from scapy.all import *; print('Scapy OK')" || true
 
 echo ""
 echo "==================================="
@@ -66,19 +66,11 @@ echo "Ghost0Mod3 Installation Complete!"
 echo "==================================="
 
 echo ""
-echo "Next Steps:"
+echo "Launch Ghost0Mod3 using:"
 echo ""
-echo "1. Configure monitor mode:"
-echo "   sudo ip link set wlan1 down"
-echo "   sudo iw dev wlan1 set type monitor"
-echo "   sudo ip link set wlan1 up"
+echo "    ./launch_Ghost0Mod3.sh"
 echo ""
-echo "2. Verify:"
-echo "   iw dev wlan1 info"
+echo "Or:"
 echo ""
-echo "   Expected:"
-echo "   type monitor"
-echo ""
-echo "3. Launch Ghost0Mod3:"
-echo "   ./launch_Ghost0Mod3.sh"
+echo "    sudo -E python3 main.py"
 echo ""
