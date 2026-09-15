@@ -8,6 +8,7 @@ echo "==================================="
 
 echo ""
 echo "Updating system..."
+
 sudo apt update
 sudo apt upgrade -y
 
@@ -27,33 +28,57 @@ sudo apt install -y \
 echo ""
 echo "Installing Python dependencies..."
 
-python3 -m pip install \
+sudo python3 -m pip install \
     --break-system-packages \
     -r requirements.txt
 
 echo ""
-echo "Setting permissions..."
+echo "Setting executable permissions..."
 
 chmod +x launch_Ghost0Mod3.sh
+
 chmod +x shutdown_Ghost0Mod3.sh
-chmod +x install_desktop_launcher.sh
+
+if [ -f install_desktop_launcher.sh ]; then
+    chmod +x install_desktop_launcher.sh
+fi
 
 echo ""
 echo "Installing desktop launchers..."
 
-./install_desktop_launcher.sh
+if [ -f install_desktop_launcher.sh ]; then
+    ./install_desktop_launcher.sh
+fi
+
+echo ""
+echo "Verifying installation..."
+
+python3 --version
+
+echo ""
+echo "Checking Scapy installation..."
+
+python3 -c "from scapy.all import *; print('Scapy OK')" || true
 
 echo ""
 echo "==================================="
-echo "Ghost0Mod3 Installation Complete"
+echo "Ghost0Mod3 Installation Complete!"
 echo "==================================="
 
 echo ""
-echo "Desktop shortcuts created."
+echo "Next Steps:"
 echo ""
-echo "Launch using:"
-echo "  Ghost0Mod3.desktop"
+echo "1. Configure monitor mode:"
+echo "   sudo ip link set wlan1 down"
+echo "   sudo iw dev wlan1 set type monitor"
+echo "   sudo ip link set wlan1 up"
 echo ""
-echo "Or:"
-echo "  ./launch_Ghost0Mod3.sh"
+echo "2. Verify:"
+echo "   iw dev wlan1 info"
+echo ""
+echo "   Expected:"
+echo "   type monitor"
+echo ""
+echo "3. Launch Ghost0Mod3:"
+echo "   ./launch_Ghost0Mod3.sh"
 echo ""
