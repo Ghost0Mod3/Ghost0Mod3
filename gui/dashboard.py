@@ -1,4 +1,3 @@
-@@ -0,0 +1,101 @@
 import tkinter as tk
 from tkinter import ttk
 
