@@ -135,23 +135,29 @@ class Scanner:
         if not SCAPY_AVAILABLE:
 
             print(
-                "Scapy not available"
+                "Scapy dependency missing. Run install.sh."
             )
 
             return
-
-        self.setup_monitor_mode()
 
         if not self.verify_monitor_mode():
 
-            print(
-                "Scanner startup aborted."
-            )
+            self.setup_monitor_mode()
 
-            return
+            if not self.verify_monitor_mode():
+
+                print(
+                    "Scanner startup aborted."
+                )
+
+                return
 
         print(
             f"Starting scanner on {self.iface}"
+        )
+
+        print(
+            f"Starting packet capture on {self.iface}"
         )
 
         self.sniffer = AsyncSniffer(
@@ -186,6 +192,8 @@ class Scanner:
 
         self.running = False
 
+        self.networks.clear()
+
     def get_status(self):
 
         if self.running:
@@ -193,4 +201,67 @@ class Scanner:
 
         return "Stopped"
 
-    def handle
+    def handle_packet(self, packet):
+
+        if not (
+            packet.haslayer(Dot11Beacon)
+            or packet.haslayer(Dot11ProbeResp)
+        ):
+            return
+
+        network = PacketParser.parse(
+            packet
+        )
+
+        bssid = network.get(
+            "bssid"
+        )
+
+        if not bssid:
+            return
+
+        classification = Classifier.classify(
+            network.get(
+                "ssid",
+                "Unknown"
+            ),
+            network.get(
+                "crypto",
+                "UNKNOWN"
+            )
+        )
+
+        network["risk"] = classification[
+            "risk"
+        ]
+
+        network["category"] = classification[
+            "category"
+        ]
+
+        with self.lock:
+
+            self.networks[
+                bssid
+            ] = network
+
+    def get_networks(self):
+
+        with self.lock:
+
+            return sorted(
+                self.networks.values(),
+                key=lambda network: network.get(
+                    "rssi",
+                    -100
+                ),
+                reverse=True
+            )
+
+    def get_network_count(self):
+
+        with self.lock:
+
+            return len(
+                self.networks
+            )
