@@ -4,7 +4,6 @@ import threading
 import subprocess
 
 try:
-
     from scapy.all import (
         AsyncSniffer,
         Dot11Beacon,
@@ -14,7 +13,6 @@ try:
     SCAPY_AVAILABLE = True
 
 except ImportError:
-
     SCAPY_AVAILABLE = False
 
 from core.packet_parser import PacketParser
@@ -50,7 +48,6 @@ class Scanner:
 
             subprocess.run(
                 [
-                    "sudo",
                     "ip",
                     "link",
                     "set",
@@ -62,7 +59,6 @@ class Scanner:
 
             subprocess.run(
                 [
-                    "sudo",
                     "iw",
                     "dev",
                     self.iface,
@@ -75,7 +71,6 @@ class Scanner:
 
             subprocess.run(
                 [
-                    "sudo",
                     "ip",
                     "link",
                     "set",
@@ -198,67 +193,4 @@ class Scanner:
 
         return "Stopped"
 
-    def handle_packet(self, packet):
-
-        if not (
-            packet.haslayer(Dot11Beacon)
-            or packet.haslayer(Dot11ProbeResp)
-        ):
-            return
-
-        network = PacketParser.parse(
-            packet
-        )
-
-        bssid = network.get(
-            "bssid"
-        )
-
-        if not bssid:
-            return
-
-        classification = Classifier.classify(
-            network.get(
-                "ssid",
-                "Unknown"
-            ),
-            network.get(
-                "crypto",
-                "UNKNOWN"
-            )
-        )
-
-        network["risk"] = classification[
-            "risk"
-        ]
-
-        network["category"] = classification[
-            "category"
-        ]
-
-        with self.lock:
-
-            self.networks[
-                bssid
-            ] = network
-
-    def get_networks(self):
-
-        with self.lock:
-
-            return sorted(
-                self.networks.values(),
-                key=lambda network: network.get(
-                    "rssi",
-                    -100
-                ),
-                reverse=True
-            )
-
-    def get_network_count(self):
-
-        with self.lock:
-
-            return len(
-                self.networks
-            )
+    def handle
