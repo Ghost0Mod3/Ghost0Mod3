@@ -1,6 +1,7 @@
 # core/scanner.py
 
 import threading
+import subprocess
 
 try:
 
@@ -39,6 +40,98 @@ class Scanner:
             self.iface
         )
 
+    def setup_monitor_mode(self):
+
+        print(
+            f"Configuring {self.iface} for monitor mode..."
+        )
+
+        try:
+
+            subprocess.run(
+                [
+                    "sudo",
+                    "ip",
+                    "link",
+                    "set",
+                    self.iface,
+                    "down"
+                ],
+                check=True
+            )
+
+            subprocess.run(
+                [
+                    "sudo",
+                    "iw",
+                    "dev",
+                    self.iface,
+                    "set",
+                    "type",
+                    "monitor"
+                ],
+                check=True
+            )
+
+            subprocess.run(
+                [
+                    "sudo",
+                    "ip",
+                    "link",
+                    "set",
+                    self.iface,
+                    "up"
+                ],
+                check=True
+            )
+
+            print(
+                f"{self.iface} now in monitor mode."
+            )
+
+        except Exception as error:
+
+            print(
+                f"Monitor mode setup failed: {error}"
+            )
+
+    def verify_monitor_mode(self):
+
+        try:
+
+            result = subprocess.run(
+                [
+                    "iw",
+                    "dev",
+                    self.iface,
+                    "info"
+                ],
+                capture_output=True,
+                text=True
+            )
+
+            if "type monitor" in result.stdout:
+
+                print(
+                    f"{self.iface} monitor mode verified."
+                )
+
+                return True
+
+            print(
+                f"{self.iface} is not in monitor mode."
+            )
+
+            return False
+
+        except Exception as error:
+
+            print(
+                f"Monitor mode verification failed: {error}"
+            )
+
+            return False
+
     def start(self):
 
         if self.running:
@@ -46,13 +139,25 @@ class Scanner:
 
         if not SCAPY_AVAILABLE:
 
-            print("Scapy not available")
-
-            self.running = True
+            print(
+                "Scapy not available"
+            )
 
             return
 
-        print(f"Starting scanner on {self.iface}")
+        self.setup_monitor_mode()
+
+        if not self.verify_monitor_mode():
+
+            print(
+                "Scanner startup aborted."
+            )
+
+            return
+
+        print(
+            f"Starting scanner on {self.iface}"
+        )
 
         self.sniffer = AsyncSniffer(
             iface=self.iface,
@@ -68,7 +173,9 @@ class Scanner:
 
     def stop(self):
 
-        print("Stopping scanner")
+        print(
+            "Stopping scanner"
+        )
 
         self.channel_hopper.stop()
 
@@ -99,9 +206,13 @@ class Scanner:
         ):
             return
 
-        network = PacketParser.parse(packet)
+        network = PacketParser.parse(
+            packet
+        )
 
-        bssid = network.get("bssid")
+        bssid = network.get(
+            "bssid"
+        )
 
         if not bssid:
             return
@@ -127,7 +238,9 @@ class Scanner:
 
         with self.lock:
 
-            self.networks[bssid] = network
+            self.networks[
+                bssid
+            ] = network
 
     def get_networks(self):
 
